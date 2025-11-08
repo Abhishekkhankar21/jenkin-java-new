@@ -6,7 +6,7 @@ stages{
           sh"""
            echo "Checkout done - $PWD"
           ls -lrt
-           """
+            """
       }
    }
 
@@ -15,7 +15,16 @@ stage("building the application"){
          sh"""
            echo "building java application"
            mvn clean pacakge
-           echo "=====Biulding java application completed======"
+           echo "=====Biulding java application completed====="
+           """
+      }
+   }
+ stage("testing java the application"){
+     steps {
+         sh"""
+           echo "building java application"
+           mvn clean pacakge
+           echo "=====Biulding java application completed====="
            """
       }
    }
