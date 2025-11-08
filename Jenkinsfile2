@@ -9,7 +9,11 @@ stages{
 
 stage("building the application"){
      steps {
+         sh"""
            echo "building java application"
+           mvn clean pacakge
+           echo "=====Biulding java application completed======"
+           """
       }
    }
 } // end of stages
