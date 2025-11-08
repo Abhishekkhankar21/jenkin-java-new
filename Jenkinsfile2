@@ -10,24 +10,25 @@ stages{
       }
    }
 
-stage("building the application"){
+stage("Testing the application"){
      steps {
-         sh"""
-           echo "building java application"
-           mvn clean pacakge
-           echo "=====Biulding java application completed====="
-           """
+         sh """
+           echo "========Testing Java Application============"
+           mvn test
+           echo "====== Testing Java Application completed====="
+         """      
       }
    }
- stage("testing java the application"){
+stage("Building the Docker Image"){
      steps {
-         sh"""
-           echo "building java application"
-           mvn clean pacakge
-           echo "=====Biulding java application completed====="
-           """
+         sh """
+           echo "========Building the Docker Image ============"
+           
+           echo "====== Building Image Completed ====="
+         """      
       }
    }
+
 } // end of stages
 
 } // end of pipeline
