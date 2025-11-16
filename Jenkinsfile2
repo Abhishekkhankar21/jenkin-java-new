@@ -57,7 +57,7 @@ stage("Building the application"){
                         docker push $IMAGE_NAME
                        
                    '''
-}
+              }
         }
      }
 
