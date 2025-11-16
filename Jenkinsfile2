@@ -1,16 +1,34 @@
 pipeline {
  agent any
+
+environment {
+        IMAGE_NAME = 'priya123456/restapi'
+        CONTAINER_NAME = 'restapi-container'
+        PORT_MAPPING = '8081:7000'  // hostPort:containerPort
+        MINIKUBE_IP = '65.0.100.41' // EC2 instance public IP address
+    }
+
 stages{
    stage("checkout"){
      steps {
-          sh"""
+           sh """
            echo "Checkout done - $PWD"
-          ls -lrt
-            """
+           ls -l
+           """
       }
    }
 
-stage("Testing the application"){
+stage("Building the application"){
+     steps {
+         sh """
+           echo "========Building Java Application============"
+           mvn clean package
+           echo "======Building Java Application completed====="
+         """      
+      }
+   }
+
+  stage("Testing the application"){
      steps {
          sh """
            echo "========Testing Java Application============"
@@ -19,17 +37,31 @@ stage("Testing the application"){
          """      
       }
    }
-stage("Building the Docker Image"){
+
+   stage("Building the Docker Image"){
      steps {
          sh """
            echo "========Building the Docker Image ============"
-           
+            docker build -t $IMAGE_NAME .
            echo "====== Building Image Completed ====="
          """      
       }
    }
 
-stage('Connect to EC2 & Deployon on Minikube ') {
+ stage(' Push Image') {
+            steps {
+                 withCredentials([usernamePassword(credentialsId: 'dockertk', usernameVariable: 'MY_DOCKER_USER',
+    passwordVariable: 'MY_DOCKER_PASS')]) {
+                    sh '''
+                        echo "$MY_DOCKER_PASS" | docker login -u "$MY_DOCKER_USER" --password-stdin
+                        docker push $IMAGE_NAME
+                       
+                   '''
+}
+        }
+     }
+
+     stage('Connect to EC2 & Deployon on Minikube ') {
             steps {
                      
                     withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY')]) {
@@ -40,6 +72,8 @@ stage('Connect to EC2 & Deployon on Minikube ') {
                   }
           }
      }
+          
+
 
 } // end of stages
 
